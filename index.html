@@ -51,7 +51,7 @@
         return;
       }
 
-      fetch("https://script.google.com/macros/s/AKfycbwMcckR7nf4auWjLvmiscKD-Sq46fi5nT02afPmSijhLqS3gfLwlixY4Oh81SNnAqb6iQ/exec")
+      fetch("https://script.google.com/macros/s/AKfycbzrc481U5G3pnT8o6w5Taqze_kuaZwUXu1Qds5d0ot-UaiK28R5qjrpjfzcTU7YjSm8YA/exec")
         .then(response => response.json())
         .then(invitedNames => {
           const match = invitedNames.some(name => name.toLowerCase() === firstName.toLowerCase());
