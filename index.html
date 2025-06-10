@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Conference Access Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Conference Checker</h1>
+    <p>Click below to check if you’re invited:</p>
+    <button onclick="checkAccess()">Check Invitation</button>
+  </div>
+
+  <script>
+    function checkAccess() {
+      const firstName = prompt("What is your first name?").trim();
+
+      if (!firstName) {
+        alert("Please enter a valid name.");
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbwMcckR7nf4auWjLvmiscKD-Sq46fi5nT02afPmSijhLqS3gfLwlixY4Oh81SNnAqb6iQ/exec")
+        .then(response => response.json())
+        .then(invitedNames => {
+          const match = invitedNames.some(name => name.toLowerCase() === firstName.toLowerCase());
+
+          if (match) {
+            alert("Hello " + firstName + ", you are welcome to this conference. We are happy to have you here!");
+          } else {
+            alert("Hello " + firstName + ", sorry, you have not been invited to this conference.");
+          }
+        })
+        .catch(error => {
+          alert("There was an error connecting to the invitation list. Please try again later.");
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>
