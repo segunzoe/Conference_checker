@@ -5,48 +5,117 @@
   <title>Conference Access Checker</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding: 50px;
-      background-color: #f0f0f0;
+      background-color: #f8f9fa;
     }
     h1 {
       color: #2c3e50;
     }
     .box {
       background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      max-width: 400px;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      max-width: 450px;
       margin: 0 auto;
+      position: relative;
+    }
+    img.logo {
+      width: 80px;
+      margin-bottom: 15px;
     }
     button {
-      background-color: #3498db;
+      background-color: #007bff;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: none;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
     }
     button:hover {
-      background-color: #2980b9;
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 25px;
+      font-size: 16px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .spinner {
+      display: none;
+      margin-top: 20px;
+    }
+    .spinner:after {
+      content: "";
+      width: 40px;
+      height: 40px;
+      border: 4px solid #007bff;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 <body>
   <div class="box">
+    <img src="https://via.placeholder.com/80x80?text=Logo" alt="Logo" class="logo" />
     <h1>Conference Checker</h1>
     <p>Click below to check if you’re invited:</p>
     <button onclick="checkAccess()">Check Invitation</button>
+    <div class="spinner" id="spinner"></div>
+    <div id="result"></div>
   </div>
 
   <script>
+    function showMessage(text, type) {
+      const resultDiv = document.getElementById("result");
+      resultDiv.textContent = text;
+      resultDiv.className = type;
+      resultDiv.style.display = "block";
+      // Trigger fade-in
+      setTimeout(() => {
+        resultDiv.style.opacity = 1;
+      }, 10);
+    }
+
     function checkAccess() {
       const firstName = prompt("What is your first name?");
+      const resultDiv = document.getElementById("result");
+      const spinner = document.getElementById("spinner");
+
+      // Reset previous states
+      resultDiv.style.display = "none";
+      resultDiv.style.opacity = 0;
+      resultDiv.className = "";
+      spinner.style.display = "inline-block";
+
       if (!firstName || !firstName.trim()) {
-        alert("Please enter a valid name.");
+        spinner.style.display = "none";
+        showMessage("Please enter a valid name.", "error");
         return;
       }
 
@@ -58,20 +127,22 @@
           return response.json();
         })
         .then(invitedNames => {
-          console.log("Fetched names:", invitedNames); // Debug log
+          spinner.style.display = "none";
+
           const match = invitedNames.some(name =>
             name.toLowerCase() === firstName.trim().toLowerCase()
           );
 
           if (match) {
-            alert(`Hello ${firstName}, you are welcome to this conference. We are happy to have you here!`);
+            showMessage(`🎉 Hello ${firstName}, you are welcome to this conference.`, "success");
           } else {
-            alert(`Sorry ${firstName}, you're not invited.`);
+            showMessage(`❌ Sorry ${firstName}, you're not invited.`, "error");
           }
         })
         .catch(error => {
-          console.error("Fetch error:", error); // Debug log
-          alert("There was an error connecting to the invitation list. Please try again later.");
+          spinner.style.display = "none";
+          console.error("Fetch error:", error);
+          showMessage("Error connecting to the invitation list. Please try again later.", "error");
         });
     }
   </script>
