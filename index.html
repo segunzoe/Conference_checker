@@ -44,27 +44,34 @@
 
   <script>
     function checkAccess() {
-      const firstName = prompt("What is your first name?").trim();
-
-      if (!firstName) {
+      const firstName = prompt("What is your first name?");
+      if (!firstName || !firstName.trim()) {
         alert("Please enter a valid name.");
         return;
       }
 
       fetch("https://script.google.com/macros/s/AKfycbzrc481U5G3pnT8o6w5Taqze_kuaZwUXu1Qds5d0ot-UaiK28R5qjrpjfzcTU7YjSm8YA/exec")
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
         .then(invitedNames => {
-          const match = invitedNames.some(name => name.toLowerCase() === firstName.toLowerCase());
+          console.log("Fetched names:", invitedNames); // Debug log
+          const match = invitedNames.some(name =>
+            name.toLowerCase() === firstName.trim().toLowerCase()
+          );
 
           if (match) {
-            alert("Hello " + firstName + ", you are welcome to this conference. We are happy to have you here!");
+            alert(`Hello ${firstName}, you are welcome to this conference. We are happy to have you here!`);
           } else {
-            alert("Sorry " + firstName + ", you're not invited.");
+            alert(`Sorry ${firstName}, you're not invited.`);
           }
         })
         .catch(error => {
+          console.error("Fetch error:", error); // Debug log
           alert("There was an error connecting to the invitation list. Please try again later.");
-          console.error(error);
         });
     }
   </script>
